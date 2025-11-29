@@ -10,6 +10,7 @@ const authRoutes = require("./routes/authRoutes");
 const quizRoutes = require("./routes/quiz");
 const userRoutes = require("./routes/user");
 const chatRoutes = require("./routes/chat");
+const speedTypeRoutes = require("./routes/speedtype");
 const { connectDB } = require("./config/database");
 const cors = require("cors");
 const seedQuizzes = require('./utils/seedQuizzes');
@@ -90,6 +91,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/quiz', quizRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/speedtype', speedTypeRoutes);
 
 // Serve static files from the React app in production
 if (process.env.NODE_ENV === 'production') {

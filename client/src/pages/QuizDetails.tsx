@@ -477,9 +477,22 @@ export function QuizDetails() {
               <h3 className="font-bold text-lg mb-4">Quiz Review</h3>
               {answeredQuestions.map((q, index) => (
                 <div key={q._id} className={`mb-6 p-4 border rounded-lg ${noTransitionClass}`}>
-                  <h4 className="font-semibold mb-2">
-                    Question {index + 1}: {q.question}
-                  </h4>
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="font-semibold">
+                      Question {index + 1}: {q.question}
+                    </h4>
+                    {q.difficulty && (
+                      <span className={`ml-2 px-2 py-1 rounded text-xs font-bold whitespace-nowrap ${
+                        q.difficulty === 'easy' 
+                          ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' 
+                          : q.difficulty === 'medium' 
+                          ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400' 
+                          : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
+                      }`}>
+                        {q.difficulty.charAt(0).toUpperCase() + q.difficulty.slice(1)}
+                      </span>
+                    )}
+                  </div>
                   <div className="space-y-2">
                     {q.options.map((option: string, optIndex: number) => (
                       <div
@@ -574,6 +587,20 @@ export function QuizDetails() {
       <Card className={noTransitionClass}>
         <CardHeader>
           <CardTitle>{question.question}</CardTitle>
+          {question.difficulty && (
+            <div className="flex items-center gap-2 mt-2">
+              <span className="text-sm font-semibold">Difficulty:</span>
+              <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                question.difficulty === 'easy' 
+                  ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' 
+                  : question.difficulty === 'medium' 
+                  ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400' 
+                  : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
+              }`}>
+                {question.difficulty.charAt(0).toUpperCase() + question.difficulty.slice(1)}
+              </span>
+            </div>
+          )}
         </CardHeader>
         <CardContent>
           <div className="space-y-2">

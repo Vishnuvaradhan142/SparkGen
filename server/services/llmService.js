@@ -86,7 +86,8 @@ async function sendRequestToOpenRouter(model, message) {
     return null;
   }
 
-  const validModel = 'deepseek/deepseek-r1:free';
+  // Map model names to correct OpenRouter IDs
+  const validModel = 'openai/gpt-3.5-turbo'; // Using GPT-3.5 as it's available on OpenRouter free tier
   console.log(`Using OpenRouter API with model: ${validModel}`);
   console.log(`API Key starts with: ${OPENROUTER_API_KEY.substring(0, 10)}...`);
 
@@ -218,8 +219,23 @@ async function sendLLMRequest(provider, model, message) {
 
       // Only generate mock data for quiz requests, not for chat messages
       if (message.includes("You are a helpful AI tutor assistant")) {
-        console.log('Returning fallback response for chat message');
-        return "I'm sorry, I couldn't process your question. Please try asking something else or rephrase your question.";
+        console.log('Returning fallback response for chat message using mock data');
+        
+        // Generate a helpful mock response based on the user's question
+        const userQuestion = message.split('User question:')[1]?.trim() || message;
+        
+        // Provide intelligent mock responses based on common topics
+        if (userQuestion.toLowerCase().includes('hello') || userQuestion.toLowerCase().includes('hi')) {
+          return "Hello! 👋 I'm your AI tutor assistant on Sparkgen. I'm here to help you understand concepts and learn new topics. Feel free to ask me about math, coding, science, grammar, or any other subject. How can I help you today?";
+        } else if (userQuestion.toLowerCase().includes('help') || userQuestion.toLowerCase().includes('how')) {
+          return "I'd be happy to help! 💡 You can ask me about:\n- **Math**: Algebra, Geometry, Calculus, and more\n- **Programming**: Python, JavaScript, Java, and other languages\n- **Science**: Physics, Chemistry, Biology\n- **Grammar & Writing**: English language rules and writing tips\n- **General Knowledge**: History, Geography, and trivia\n\nJust ask your question and I'll provide a detailed explanation!";
+        } else if (userQuestion.toLowerCase().includes('math') || userQuestion.toLowerCase().includes('algebra')) {
+          return "Great question about math! 📐 Here's my approach:\n\n1. **Understand the Problem**: Read carefully and identify what you're solving for\n2. **Break it Down**: Simplify complex problems into smaller steps\n3. **Apply Concepts**: Use relevant formulas and theorems\n4. **Check Your Work**: Verify your answer by substituting back\n\nWhat specific math problem would you like help with?";
+        } else if (userQuestion.toLowerCase().includes('code') || userQuestion.toLowerCase().includes('program')) {
+          return "Excellent! Let's talk about programming! 💻 Here are some tips:\n\n1. **Practice Consistently**: Write code every day\n2. **Start with Basics**: Master fundamentals before advanced topics\n3. **Read Documentation**: Official docs are your best friend\n4. **Debug Methodically**: Use print statements or debuggers\n5. **Learn by Building**: Create projects to apply what you learn\n\nWhat programming language or concept would you like to explore?";
+        } else {
+          return `I appreciate your question! 🤔 While I'm experiencing some technical limitations with the AI service right now, I can still help guide you through learning concepts.\n\nHere's what I can do:\n- Explain key concepts step-by-step\n- Break down complex problems\n- Suggest learning strategies\n- Point you to important principles\n\nWhat would you like to learn about? (Math, Programming, Science, Grammar, or General Knowledge)`;
+        }
       }
 
       // From here on, generate mock quiz data

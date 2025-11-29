@@ -129,3 +129,43 @@ export const createQuiz = async (data: {
     }
   }
 };
+
+// Description: Get subject-specific performance stats
+// Endpoint: GET /api/quiz/subject-stats/:subject
+// Request: { subject: string }
+// Response: { subject: string, attempts: number, averageScore: number, bestScore: number, currentDifficulty: string, recentScores: number[], scoreHistory: Array<{ score: number, date: string, difficulty: string }> }
+export const getSubjectStats = async (subject: string) => {
+  try {
+    const response = await api.get(`/api/quiz/subject-stats/${subject}`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    if (error instanceof AxiosError && error.response?.data?.error) {
+      throw new Error(error.response.data.error);
+    } else if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error('Failed to fetch subject stats');
+    }
+  }
+};
+
+// Description: Get all subject performance stats
+// Endpoint: GET /api/quiz/all-subject-stats
+// Request: {}
+// Response: { subjects: Array<{ subject: string, attempts: number, averageScore: number, bestScore: number, currentDifficulty: string, recentScores: number[] }> }
+export const getAllSubjectStats = async () => {
+  try {
+    const response = await api.get('/api/quiz/all-subject-stats');
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    if (error instanceof AxiosError && error.response?.data?.error) {
+      throw new Error(error.response.data.error);
+    } else if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error('Failed to fetch all subject stats');
+    }
+  }
+};

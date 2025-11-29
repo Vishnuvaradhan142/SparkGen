@@ -55,9 +55,9 @@ async function getQuizById(quizId, userData = {}, forceRegenerate = false) {
       return null;
     }
 
-    // Determine difficulty based on user level
-    let userDifficulty = 'medium';
-    if (userData && userData.level) {
+    // Determine difficulty - prioritize customDifficulty from subject scores
+    let userDifficulty = userData?.customDifficulty || 'medium';
+    if (!userData?.customDifficulty && userData?.level) {
       const userLevel = parseInt(userData.level, 10);
       if (!isNaN(userLevel)) {
         if (userLevel <= 3) {
@@ -69,8 +69,6 @@ async function getQuizById(quizId, userData = {}, forceRegenerate = false) {
         }
         console.log(`Setting difficulty to ${userDifficulty} based on user level ${userLevel}`);
       }
-    } else {
-      console.log(`No user level provided. Defaulting to ${userDifficulty} difficulty`);
     }
 
     // Store current quiz difficulty
@@ -449,12 +447,12 @@ async function generateQuizQuestions(params) {
   try {
     console.log(`Generating ${numQuestions} ${difficulty} level ${quizType} questions about ${topic}`);
 
-    // Construct shorter prompt for DeepSeek
+    // Construct shorter prompt for AI
     const prompt = constructPrompt(topic, quizType, difficulty, numQuestions);
     console.log("Using prompt:", prompt);
 
-    // Use LLM service with DeepSeek via OpenRouter
-    let llmResponse = await sendLLMRequest('openrouter', 'deepseek/deepseek-r1:free', prompt);
+    // Use LLM service with GPT-3.5 via OpenRouter
+    let llmResponse = await sendLLMRequest('openrouter', 'openai/gpt-3.5-turbo', prompt);
 
     // Parse the response to extract questions
     const parsedQuestions = parseQuizQuestions(llmResponse);
@@ -506,37 +504,73 @@ function generateDefaultQuestions(topic) {
     {
       question: `What is a key concept in ${topic}?`,
       options: [`Concept A`, `Concept B`, `Concept C`, `Concept D`],
-      answer: `Concept A`
+      answer: `Concept A`,
+      difficulty: 'easy'
     },
     {
       question: `Who is an important figure in ${topic}?`,
       options: [`Person A`, `Person B`, `Person C`, `Person D`],
-      answer: `Person A`
+      answer: `Person A`,
+      difficulty: 'easy'
     },
     {
       question: `Which of these is related to ${topic}?`,
       options: [`Related thing A`, `Unrelated thing B`, `Unrelated thing C`, `Unrelated thing D`],
-      answer: `Related thing A`
+      answer: `Related thing A`,
+      difficulty: 'medium'
     },
     {
       question: `When did ${topic} become significant?`,
       options: [`Year A`, `Year B`, `Year C`, `Year D`],
-      answer: `Year A`
+      answer: `Year A`,
+      difficulty: 'medium'
     },
     {
       question: `Where is ${topic} most commonly applied?`,
       options: [`Field A`, `Field B`, `Field C`, `Field D`],
-      answer: `Field A`
+      answer: `Field A`,
+      difficulty: 'hard'
     }
   ];
 }
 
 /**
- * Construct a prompt for quiz generation
+ * Construct a prompt for quiz generation with difficulty distribution
  */
 function constructPrompt(topic, quizType, difficulty, numQuestions) {
-  // Make the prompt shorter to fit within token limits
-  const prompt = `Generate ${numQuestions} ${difficulty} ${quizType} questions about ${topic}. Format as JSON array with objects having: "question", "options" (4 strings), "answer" (correct option).`;
+  let difficultyInstructions = '';
+  
+  // If difficulty is hard and we have 5+ questions, ensure at least one question is extremely challenging
+  if (difficulty === 'hard' && numQuestions >= 5) {
+    difficultyInstructions = `
+IMPORTANT: Create a mix of ${difficulty} questions:
+- At least 1 extremely challenging question (advanced concepts, requires deep understanding)
+- The rest should be ${difficulty} level (challenging but fair)
+- Vary the difficulty within the "${difficulty}" category`;
+  } else if (difficulty === 'medium' && numQuestions >= 5) {
+    difficultyInstructions = `
+IMPORTANT: Create a mix of ${difficulty} questions:
+- Most questions should be ${difficulty} level
+- You can include 1-2 slightly harder questions if appropriate
+- Ensure variety in concepts covered`;
+  }
+
+  const prompt = `You are a quiz generator. Generate exactly ${numQuestions} ${difficulty} level multiple choice questions about "${topic}".
+${difficultyInstructions}
+
+Return ONLY a valid JSON array with no additional text. Each question object must have:
+- "question": the question text
+- "options": array of exactly 4 answer options (strings)
+- "answer": the correct answer (must be one of the 4 options)
+- "difficulty": set to "${difficulty}"
+
+Example format:
+[
+  {"question": "What is 2+2?", "options": ["2", "3", "4", "5"], "answer": "4", "difficulty": "easy"},
+  {"question": "What is the capital of France?", "options": ["London", "Paris", "Berlin", "Madrid"], "answer": "Paris", "difficulty": "easy"}
+]
+
+Now generate ${numQuestions} questions about ${topic}:`;
 
   console.log('Constructed prompt for quiz generation');
   return prompt;
