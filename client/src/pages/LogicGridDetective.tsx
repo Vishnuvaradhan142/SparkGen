@@ -7,7 +7,11 @@ import { ArrowLeft, HelpCircle, Lightbulb, Star, CheckCircle2, Home, RotateCcw, 
 
 /**
  * LogicGridDetective - Kids Edition (Final Clean)
+<<<<<<< HEAD
  * Fixes: Moved useNavigate to top level to fix "Rendered more hooks" error.
+=======
+ * Fixes: Removed unused imports (useEffect, useCallback)
+>>>>>>> a3f6b3d4292847e259eb9ffaddfd796ebb65980b
  */
 
 // --- Types ---
@@ -329,7 +333,10 @@ function WinModal({ onRestart, onExit }: { onRestart: () => void, onExit: () => 
 
 // --- MAIN APP ---
 export function LogicGridDetective() {
+<<<<<<< HEAD
   const navigate = useNavigate(); // Moved to top level to avoid hook errors
+=======
+>>>>>>> a3f6b3d4292847e259eb9ffaddfd796ebb65980b
   const { toast } = useToast();
   const [mode, setMode] = useState<'menu' | 'playing'>('menu');
   
@@ -442,7 +449,11 @@ export function LogicGridDetective() {
                {RAW_PUZZLES.map((p, i) => (
                  <div key={p.id} className="bg-white rounded-3xl p-6 shadow-xl border-4 border-indigo-100 hover:border-indigo-400 hover:scale-105 transition-all group cursor-pointer flex flex-col" onClick={() => startGame(i, true)}>
                     <div className="flex justify-between items-start mb-3">
+<<<<<<< HEAD
                       <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${p.difficulty === 'Easy' ? 'bg-green-100 text-green-700' : p.difficulty === 'Medium' ? 'bg-orange-100 text-orange-700' : 'bg-red-100 text-red-700'}`}>{p.difficulty}</span>
+=======
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${p.difficulty === 'Easy' ? 'bg-green-100 text-green-700' : p.difficulty === 'Medium' ? 'bg-orange-100 text-orange-700' : 'bg-red-100 text-red-700'}`}>{p.difficulty}</span>
+>>>>>>> a3f6b3d4292847e259eb9ffaddfd796ebb65980b
                       <span className="text-2xl">{p.categories[0].options[0].icon}</span>
                     </div>
                     <h3 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-indigo-600 transition-colors line-clamp-1">{p.title}</h3>
@@ -459,6 +470,10 @@ export function LogicGridDetective() {
   }
 
   // PLAYING
+<<<<<<< HEAD
+=======
+  const navigate = useNavigate();
+>>>>>>> a3f6b3d4292847e259eb9ffaddfd796ebb65980b
   const cat0 = activePuzzle.categories[0];
   const cat1 = activePuzzle.categories[1];
   const cat2 = activePuzzle.categories[2];
