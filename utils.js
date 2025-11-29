@@ -13,36 +13,13 @@ const isProduction = typeof process !== 'undefined' && process.env && process.en
 
 /**
  * Sending logs to the development server
- * This only works in development environment
+ * Disabled to prevent connection errors - logs are handled client-side only
  * @returns {Promise} - Promise resolving when logs are sent
  */
 const sendLogs = async () => {
-  // Skip completely in production - no logging attempted
-  if (isProduction) {
-    return;
-  }
-
-  // Only continue if buffer is not empty
-  if (logBuffer.length === 0) {
-    return;
-  }
-
-  const logsToSend = [...logBuffer];
-  logBuffer = [];
-
-  try {
-    const response = await fetch('http://localhost:4444/logs', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ logs: logsToSend })
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to send logs: HTTP ${response.status}`);
-    }
-  } catch (error) {
-    console.error('Development logging server unreachable');
-  }
+  // Logging to remote server is disabled
+  // Logs are captured client-side only via console interceptor
+  return Promise.resolve();
 };
 
 /**

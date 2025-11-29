@@ -6,12 +6,14 @@ import {
   GamepadIcon,
   User,
   MenuIcon,
+  Medal,
 } from "lucide-react";
 import { Button } from "./ui/button";
 
 const menuItems = [
   { icon: Home, label: "Home", path: "/" },
   { icon: GamepadIcon, label: "Games", path: "/games" },
+  { icon: Medal, label: "Leaderboard", path: "/leaderboard" },
   { icon: Trophy, label: "Achievements", path: "/achievements" },
   { icon: User, label: "Profile", path: "/profile" },
 ];

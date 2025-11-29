@@ -52,6 +52,26 @@ export const getLeaderboard = async () => {
   }
 };
 
+// Description: Get subject-specific leaderboard
+// Endpoint: GET /api/user/leaderboard/:subject
+// Request: { subject: string }
+// Response: Array<{ id: string, username: string, xp: number, level: number, rank: number, bestScore: number, attempts: number }>
+export const getSubjectLeaderboard = async (subject: string) => {
+  try {
+    const response = await api.get(`/api/user/leaderboard/${subject}`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    if (error instanceof AxiosError && error.response?.data?.error) {
+      throw new Error(error.response.data.error);
+    } else if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error('Failed to fetch subject leaderboard');
+    }
+  }
+};
+
 // Description: Update user XP
 // Endpoint: PUT /api/user/:userId/xp
 // Request: { xp: number }

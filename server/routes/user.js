@@ -59,6 +59,45 @@ router.get('/leaderboard', auth.requireUser, async (req, res) => {
   }
 });
 
+router.get('/leaderboard/:subject', auth.requireUser, async (req, res) => {
+  try {
+    const { subject } = req.params;
+    console.log(`Fetching leaderboard for subject: ${subject}`);
+
+    // Find all active users with their subject scores
+    const users = await User.find({ isActive: true })
+      .select('email displayName level subjectScores')
+      .lean();
+
+    // Extract and format the leaderboard data for this subject
+    const subjectLeaderboard = users
+      .map((user) => {
+        const subjectData = user.subjectScores && user.subjectScores[subject];
+        return {
+          id: user._id,
+          username: user.displayName || user.email.split('@')[0],
+          level: user.level,
+          xp: subjectData ? subjectData.totalXP : 0,
+          bestScore: subjectData ? subjectData.bestScore : 0,
+          attempts: subjectData ? subjectData.attempts : 0
+        };
+      })
+      .filter(user => user.attempts > 0) // Only include users who have played this subject
+      .sort((a, b) => b.xp - a.xp) // Sort by XP descending
+      .slice(0, 10) // Limit to top 10
+      .map((user, index) => ({
+        ...user,
+        rank: index + 1
+      }));
+
+    console.log(`Successfully retrieved ${subjectLeaderboard.length} users for subject leaderboard: ${subject}`);
+    res.json(subjectLeaderboard);
+  } catch (error) {
+    console.error('Error fetching subject leaderboard:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 /**
  * Update user's XP points and recalculate level
  */

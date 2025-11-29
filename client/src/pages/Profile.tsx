@@ -78,13 +78,18 @@ export function Profile() {
   const calculateLevelProgress = () => {
     if (!profile) return 0;
 
-    // Simplified calculation - in a real app you might want to use the same formula as the backend
-    const currentLevelXp = Math.pow(profile.level - 1, 2) * 100;
-    const nextLevelXp = Math.pow(profile.level, 2) * 100;
+    // Match the backend formula for level calculation
+    const baseXp = 100;
+    const scalingFactor = 1.5;
+
+    // Calculate XP required for current level and next level
+    const currentLevelXp = profile.level <= 1 ? 0 : baseXp * Math.pow(scalingFactor, profile.level - 2);
+    const nextLevelXp = baseXp * Math.pow(scalingFactor, profile.level - 1);
+    
     const xpRange = nextLevelXp - currentLevelXp;
     const userXpInLevel = profile.xp - currentLevelXp;
 
-    return Math.min(Math.round((userXpInLevel / xpRange) * 100), 100);
+    return Math.min(Math.max(Math.round((userXpInLevel / xpRange) * 100), 0), 100);
   };
 
   // Get appropriate achievements based on level and progress
